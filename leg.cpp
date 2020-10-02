@@ -10,6 +10,7 @@ void LegClass::legInit(int _id_c1,int _id_c4){
    r_min = 50; r_max = 110; 
    engine_c1.init(_id_c1,_id_c1,544,2400,160.0,80);
    engine_c4.init(_id_c4,_id_c4,544,2400,160.0,80);
+   set_move_to_pos=false;
 }
 
 void LegClass::legInit(float _L1,float _L2,float _L3,float _L4,float _L5,float _L6,float _ALP,float _c10,float _c40)
@@ -20,8 +21,15 @@ void LegClass::legInit(float _L1,float _L2,float _L3,float _L4,float _L5,float _
    c1=c4=c1t=c4t=0;
 }
 
-void LegClass::update()
+void LegClass::update(float _dt)
 {
+	if(set_move_to_pos)
+	{
+		if(target_x == x && target_y == y)  //到达目标
+			set_move_to_pos = false;
+		use_t+=_dt;
+		setPos(Lerp(start_x,target_x,use_t/use_t_long) , Lerp(start_y,target_y,use_t/use_t_long));
+	}
 	engine_c1.setRad(c1);
 	engine_c4.setRad(c4);
 	engine_c1.updateSteering();
@@ -35,6 +43,18 @@ bool LegClass::setPos(float _x,float _y)
 
 	x= _x; y = _y;
 	Njie();
+	return true;
+}
+
+bool LegClass::moveToPos(float _target_x,float _target_y,float _use_t_long)
+{
+	if( (_target_x*_target_x + _target_y * _target_y > r_max * r_max) || (_target_x*_target_x + _target_y * _target_y < r_min * r_min)) 
+		return false;
+	set_move_to_pos = true;
+	target_x = _target_x; target_y = _target_y;
+	use_t_long = _use_t_long;
+	use_t = 0;
+	start_x = x; start_y = y;
 	return true;
 }
 

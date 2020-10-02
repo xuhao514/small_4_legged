@@ -73,6 +73,8 @@ void sendData()
     Serial.print(arr[i]);
   }
 }
+double t_now,t_pre;
+double dt;
 
 void setup() {
   // put your setup code here, to run once:
@@ -80,16 +82,19 @@ void setup() {
   leg1.legInit(2,3);
   //steering_engine1.init(1,2,544,2400,160.0,0);
   Serial.begin(115200);
-  while (!Serial) {
-  }
+  t_now = t_pre = 0;
 }
 
 void loop() {
+  t_now = millis();
+  dt = t_now - t_pre;
+  t_pre = t_now;
+
   singleServoControl();
   usartRead();
 
   //steering_engine1.updateSteering();  
-  leg1.update();
+  leg1.update(dt);
 
   sendData();
   delay(5);  

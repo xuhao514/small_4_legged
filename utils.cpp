@@ -37,7 +37,7 @@ void Roat(float *x,float *y,float c){
 	*y=mx*sin(c)+my*cos(c);
 }
 
-//线性插值  ；_start 起始值;  _end终值；  _t ：0-1 比例
+//线性插值  ；_start 起始值;  _end终值；  _t ：0-1 比例，大于1返回1
 float Lerp(float _start,float _end,float _t)
 {
 	  if(_t>1) _t=1;

@@ -1,7 +1,6 @@
 #ifndef _WALKCLASS
 #define _WALKCLASS
 #include "leg.h"
-#include "utils.h"
 
 class WalkLegClass
 {

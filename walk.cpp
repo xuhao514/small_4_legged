@@ -64,7 +64,7 @@ void WalkLegClass::walkUpdate(float _dt)
    if(alp!=0) Rotate(&x,&y,L5/2,0,forward*alp);  //围绕腿的原点旋转
   
     leg->setPos(x,y);
-	leg->update();
+	leg->update(_dt);
 }
 
 void WalkLegClass::reStart()
