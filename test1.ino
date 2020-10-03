@@ -2,7 +2,7 @@
 #include "steering_engine.h"
 #include "data_processing.h"
 #include "leg.h"
-
+#include "walk.h"
 
 SteeringEngine steering_engine1;
 DataProcess data_process;
@@ -10,6 +10,8 @@ float ang = 0;
 
 float value;
 LegClass leg1;
+WalkLegClass walkLegClass1;
+
 struct SendValue
 {
  float a,b;
@@ -67,7 +69,7 @@ void sendData()
   int _len;
   char *arr;
   char _id = 11 ;
-  arr=data_process.dataEncode<SendValue>(&send_value, _id , &_len);
+  arr=data_process.dataEncode<WalkLegState>(&walkLegClass1.walk_leg_state, _id , &_len);
   for(int i=0;i<_len;i++)
   {
     Serial.print(arr[i]);
@@ -80,9 +82,12 @@ void setup() {
   // put your setup code here, to run once:
  
   leg1.legInit(2,3);
+  walkLegClass1.init(leg1,11,85,50,30,1000,1,1500,0,12,1);
   //steering_engine1.init(1,2,544,2400,160.0,0);
   Serial.begin(115200);
   t_now = t_pre = 0;
+  walkLegClass1.move2InitPos(10000);
+   
 }
 
 void loop() {
@@ -90,12 +95,12 @@ void loop() {
   dt = t_now - t_pre;
   t_pre = t_now;
 
-  singleServoControl();
-  usartRead();
+  //singleServoControl();
+ // usartRead();
 
   //steering_engine1.updateSteering();  
-  leg1.update(dt);
-
+  //leg1.update(dt);
+  walkLegClass1.walkUpdate(dt);
   sendData();
   delay(5);  
 }

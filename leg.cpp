@@ -11,6 +11,8 @@ void LegClass::legInit(int _id_c1,int _id_c4){
    engine_c1.init(_id_c1,_id_c1,544,2400,160.0,80);
    engine_c4.init(_id_c4,_id_c4,544,2400,160.0,80);
    set_move_to_pos=false;
+
+   Zjie(c10,c40);  //计算初始的坐标
 }
 
 void LegClass::legInit(float _L1,float _L2,float _L3,float _L4,float _L5,float _L6,float _ALP,float _c10,float _c40)
@@ -90,9 +92,27 @@ void LegClass::Njie(){
 
 
 //开链五杆正解   
-void LegClass::Zjie(){
-	float _c1,_c4;
-	_c1=c1+c10; _c4=c4+c40;
+// void LegClass::Zjie(float _c1,float _c4){
+	
+// 	xb=L1*cos(_c1);yb=L1*sin(_c1);
+// 	xd=L5+L4*cos(_c4);yd=L4*sin(_c4);
+// 	lbd=sqrt((xd-xb)*(xd-xb)+(yd-yb)*(yd-yb));
+// 	A0=2*L2*(xd-xb);
+// 	B0_=2*L2*(yd-yb);
+// 	C0=L2*L2+lbd*lbd-L3*L3;
+// 	u2=2*atan((B0_+sqrt(A0*A0+B0_*B0_-C0*C0))/(A0+C0));
+// 	xc=xb+L2*cos(u2);
+// 	yc=yb+L2*sin(u2);
+// 	float b_=-ALP;
+// 	float _m=L1*cos(_c1);
+//     float _n=L1*sin(_c1);
+// 	x=L6/L2*((xc-m)*cos(-b_)-(yc-n)*sin(-b_))+_m;
+// 	y=L6/L2*((xc-m)*sin(-b_)+(yc-n)*cos(-b_))+_n;
+
+// }
+
+void LegClass::Zjie(float _c1,float _c4){
+	float xb,yb,xd,yd,lbd,A0,B0_,C0,u2,xc,yc,m,n,c1,c4,b;
 	
 	xb=L1*cos(_c1);yb=L1*sin(_c1);
 	xd=L5+L4*cos(_c4);yd=L4*sin(_c4);
@@ -103,9 +123,8 @@ void LegClass::Zjie(){
 	u2=2*atan((B0_+sqrt(A0*A0+B0_*B0_-C0*C0))/(A0+C0));
 	xc=xb+L2*cos(u2);
 	yc=yb+L2*sin(u2);
-	float b_=-ALP;
-	float _m=L1*cos(_c1);
-    float _n=L1*sin(_c1);
-	x=L6/L2*((xc-m)*cos(-b_)-(yc-n)*sin(-b_))+_m;
-	y=L6/L2*((xc-m)*sin(-b_)+(yc-n)*cos(-b_))+_n;
+	b=-ALP;
+	m=L1*cos(_c1);n=L1*sin(_c1);
+	x=L6/L2*((xc-m)*cos(-b)-(yc-n)*sin(-b))+m;
+	y=L6/L2*((xc-m)*sin(-b)+(yc-n)*cos(-b))+n;
 }

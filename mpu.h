@@ -1,7 +1,7 @@
 #ifndef _MPU_H
 #define _MPU_H
 #include <Wire.h>
-#include "math.h"
+#include "utils.h"
 #define MPU_ADD 0x68  //MPU-6050的I2C地址
 const int nValCnt = 7; //一次读取寄存器的数量
 const float fRad2Deg = 57.295779513f; //将弧度转为角度的乘数

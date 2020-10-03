@@ -2,6 +2,17 @@
 #define _WALKCLASS
 #include "leg.h"
 
+struct WalkLegState
+{
+    bool to_init_pos;
+    bool in_delay;
+    bool walking;
+    bool in_air_else_floor;
+    float x,y;
+    float tn;
+};
+
+
 class WalkLegClass
 {
 public:
@@ -12,9 +23,13 @@ public:
     void walkTurnOri(int forward,int reverse,float Len);
     void setBezier(float _x0,float _y0,float _L,float _H0,int _bezierLen,int _forward);
     void reStart();        //ToDo
+    bool move2InitPos(float _use_t_long);   //移动动初始位置
+    WalkLegState walk_leg_state;
 // void SetWalkLegAlp(void);
 //	void WalkAccSet(void);
-
+private:
+    void calPos(float _tn);  //计算位置  _tn:周期中的时刻
+    void calTnNow(float _dt); 
 private: 
     float x0;             //(x0,y0) 行走曲线中心点 mm
     float y0;    
@@ -22,11 +37,11 @@ private:
     float H0;             //步高  
     float Lst;            //初始设置的步长 
     float H0st;           //初始设置的步高
-    float t_floor;        //着地相时长
-    float t_air;           //腾空相时长	
+    float t_floor;        //着地相时长 ms
+    float t_air;           //腾空相时长	ms
     float tair_tfloor_scale;  //Tair与t_floor的比值
     float start_tn;       //周期的起始时刻
-    float delay_t;        //启动延时
+
     bool is_add_start_tn; 
     float alp;            // 曲线旋转角度  弧度 //上坡时可能用到
     int bezier_len;        // 使用的贝赛尔曲线的数组长度
@@ -47,15 +62,13 @@ private:
     int walk_leg_num;          //单腿步数
     float v_leg;         //单腿的速度
 
-    float delay_t;      //初始延时 
+    float delay_t;      //初始延时 ms
     bool prep;
     float prepc1,prepc4;  //记录需要运动到的位置
     float MaxL,MinL;      //最大最小步长	      
     bool add_phase;        //是否加上的相位差
-    float x,y;  //计算的坐标
-
-    float delay_cal_t;  //计算延时时间
-
+    float x,y;  //计算的坐标 mm
+    float use_t_long;   //ms
 };
 
 

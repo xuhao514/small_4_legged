@@ -1,12 +1,11 @@
 #ifndef LEGCLASS
 #define LEGCLASS
 
-#include "math.h"
 #include "steering_engine.h"
 #include "utils.h"
 
 //足底曲线的规划方向与车身的实际的方向可能不一样  比如车身的前后腿对称安装的时候  前后腿的前方向是反的
-#define PI 3.14159
+#define PI 3.1415926
 
 class LegClass
 {
@@ -25,6 +24,8 @@ public:
   float get_c1(){return c1;};
   float get_c4(){return c4;};
   float get_L5(){return L5;};
+  float get_x(){return x;};
+  float get_y(){return y;};
 private:
   float c1,c4;             //对应角度   弧度
   float x,y;               //足底曲线坐标    mm
@@ -36,7 +37,7 @@ private:
   ///  L1~L6杆长  ALP L6与L2夹角  ALP向外为正(逆时针)
 	float L1, L2, L3, L4, L5, L6,ALP;
   //正解  由(c1,c4))求(x,y)
-	void Zjie();
+	void Zjie(float _c1,float _c4);
   //逆解 由(x,y)求(c1,c4)
   void Njie();
   //闭链五杆的逆解
@@ -54,9 +55,8 @@ private:
   float r_min,r_max;                       //工作空间范围最大最小半径  mm
 
    //求解的局部参数
-  volatile float xb,yb,xd,yd,lbd,A0,B0_,C0,u2,xc,yc;
-  volatile float A,B,C,a,b,c;
-  volatile float m,n,x1,y1;
+  float A,B,C,a,b,c;
+  float m,n,x1,y1;
 };
 
 

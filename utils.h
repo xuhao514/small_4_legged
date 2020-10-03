@@ -1,6 +1,6 @@
 #ifndef __UTILS_H
 #define __UTILS_H
-
+#include "math.h"
 #define abs(x) ((x)>0?(x):-(x))
 
 void Bezier(float *x,float *y,float mx[],float my[],int n,float t);
