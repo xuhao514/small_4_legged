@@ -91,26 +91,6 @@ void LegClass::Njie(){
 }
 
 
-//开链五杆正解   
-// void LegClass::Zjie(float _c1,float _c4){
-	
-// 	xb=L1*cos(_c1);yb=L1*sin(_c1);
-// 	xd=L5+L4*cos(_c4);yd=L4*sin(_c4);
-// 	lbd=sqrt((xd-xb)*(xd-xb)+(yd-yb)*(yd-yb));
-// 	A0=2*L2*(xd-xb);
-// 	B0_=2*L2*(yd-yb);
-// 	C0=L2*L2+lbd*lbd-L3*L3;
-// 	u2=2*atan((B0_+sqrt(A0*A0+B0_*B0_-C0*C0))/(A0+C0));
-// 	xc=xb+L2*cos(u2);
-// 	yc=yb+L2*sin(u2);
-// 	float b_=-ALP;
-// 	float _m=L1*cos(_c1);
-//     float _n=L1*sin(_c1);
-// 	x=L6/L2*((xc-m)*cos(-b_)-(yc-n)*sin(-b_))+_m;
-// 	y=L6/L2*((xc-m)*sin(-b_)+(yc-n)*cos(-b_))+_n;
-
-// }
-
 void LegClass::Zjie(float _c1,float _c4){
 	float xb,yb,xd,yd,lbd,A0,B0_,C0,u2,xc,yc,m,n,c1,c4,b;
 	

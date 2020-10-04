@@ -3,6 +3,7 @@
 #include "data_processing.h"
 #include "leg.h"
 #include "walk.h"
+#include "mpu.hpp"
 
 SteeringEngine steering_engine1;
 DataProcess data_process;
@@ -11,12 +12,17 @@ float ang = 0;
 float value;
 LegClass leg1;
 WalkLegClass walkLegClass1;
+Mpu mpu6050;
 
 struct SendValue
 {
  float a,b;
 } ;
 SendValue send_value;
+struct YPR{
+  float y,p,r;
+};
+YPR ypr_data;
 
 float pos = 60;    bool dir = false;    
 void singleServoControl(){
@@ -63,13 +69,13 @@ void sendData()
 {
   // value = steering_engine.getAng();
   // value = steering_engine1.getRatio();
-
+  ypr_data.y =mpu6050.ypr[0]*180 / M_PI; ypr_data.p = mpu6050.ypr[1]*180 / M_PI; ypr_data.r = mpu6050.ypr[2]*180 / M_PI;
   send_value.a = leg1.get_c1();
   send_value.b = leg1.get_c4();
   int _len;
   char *arr;
   char _id = 11 ;
-  arr=data_process.dataEncode<WalkLegState>(&walkLegClass1.walk_leg_state, _id , &_len);
+  arr=data_process.dataEncode<YPR>(&ypr_data, _id , &_len);
   for(int i=0;i<_len;i++)
   {
     Serial.print(arr[i]);
@@ -86,15 +92,15 @@ void setup() {
   //steering_engine1.init(1,2,544,2400,160.0,0);
   Serial.begin(115200);
   t_now = t_pre = 0;
-  walkLegClass1.move2InitPos(10000);
-   
+  walkLegClass1.move2InitPos(2000);
+  mpu6050.init();
 }
 
 void loop() {
   t_now = millis();
   dt = t_now - t_pre;
   t_pre = t_now;
-
+  mpu6050.update();
   //singleServoControl();
  // usartRead();
 
