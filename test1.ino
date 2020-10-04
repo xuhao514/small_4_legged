@@ -75,7 +75,7 @@ void sendData()
   int _len;
   char *arr;
   char _id = 11 ;
-  arr=data_process.dataEncode<YPR>(&ypr_data, _id , &_len);
+  arr=data_process.dataEncode<WalkLegState>(&walkLegClass1.walk_leg_state, _id , &_len);
   for(int i=0;i<_len;i++)
   {
     Serial.print(arr[i]);
@@ -83,24 +83,26 @@ void sendData()
 }
 double t_now,t_pre;
 double dt;
-
+bool inited=false;
 void setup() {
   // put your setup code here, to run once:
- 
+  Serial.begin(115200);
+  mpu6050.init();
+
   leg1.legInit(2,3);
   walkLegClass1.init(leg1,11,85,50,30,1000,1,1500,0,12,1);
   //steering_engine1.init(1,2,544,2400,160.0,0);
-  Serial.begin(115200);
-  t_now = t_pre = 0;
-  walkLegClass1.move2InitPos(2000);
-  mpu6050.init();
+
+   walkLegClass1.move2InitPos(2000);
+   t_now = t_pre = millis();
 }
 
 void loop() {
+
   t_now = millis();
   dt = t_now - t_pre;
   t_pre = t_now;
-  mpu6050.update();
+ // mpu6050.update();
   //singleServoControl();
  // usartRead();
 
