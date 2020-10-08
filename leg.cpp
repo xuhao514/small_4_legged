@@ -1,8 +1,11 @@
 
 #include "leg.h"
+///  L1~L6杆长  ALP L6与L2夹角  ALP向外为正(逆时针)
+float L1, L2, L3, L4, L5, L6,ALP;
+float r_min,r_max;                       //工作空间范围最大最小半径  mm
 
 void LegClass::legInit(int _id_c1,int _id_c4){
-	c1=c4=c1t=c4t=0;
+	c1=c4=0;
 	//机构参数
   ////  L1~L6杆长  ALP L6与L2夹角  ALP向外为正(逆时针)
    L1=50; L2=80;  L3=80;  L4=50;  L5=22; L6=80; ALP=0.0;
@@ -13,6 +16,8 @@ void LegClass::legInit(int _id_c1,int _id_c4){
    set_move_to_pos=false;
 
    Zjie(c10,c40);  //计算初始的坐标
+   engine_c1.setRad(c1);
+   engine_c4.setRad(c4);
 }
 
 void LegClass::legInit(float _L1,float _L2,float _L3,float _L4,float _L5,float _L6,float _ALP,float _c10,float _c40)
@@ -20,7 +25,7 @@ void LegClass::legInit(float _L1,float _L2,float _L3,float _L4,float _L5,float _
    L1=_L1; L2=_L2;  L3=_L3;  L4=_L4;  L5=_L5; L6=_L6; ALP=_ALP;
    c10=_c10; c40=_c40;
 	
-   c1=c4=c1t=c4t=0;
+   c1=c4=0;
 }
 
 void LegClass::update(float _dt)
@@ -37,6 +42,11 @@ void LegClass::update(float _dt)
 	engine_c1.updateSteering();
 	engine_c4.updateSteering();
 }
+void LegClass::updateByRad()
+{
+	engine_c1.updateSteering();
+	engine_c4.updateSteering();
+}
 
 bool LegClass::setPos(float _x,float _y)
 {
@@ -46,6 +56,13 @@ bool LegClass::setPos(float _x,float _y)
 	x= _x; y = _y;
 	Njie();
 	return true;
+}
+
+void LegClass::setSteerRad(float _c1,float _c4)
+{
+	c1=_c1; c4=_c4;
+	engine_c1.setRad(_c1);
+	engine_c4.setRad(_c4);
 }
 
 bool LegClass::moveToPos(float _target_x,float _target_y,float _use_t_long)
@@ -60,9 +77,11 @@ bool LegClass::moveToPos(float _target_x,float _target_y,float _use_t_long)
 	return true;
 }
 
+float LegClass::get_L5(){return L5;};
+
 //闭链五杆的逆解  被Njie()调用
 void LegClass::nije_5( float *_c1, float *_c4, float x1,float y1,float l1,float l2,float l3,float l4,float l5){
-    
+    float A,B,C,a,b,c;
     A=2*l1*y1;B=2*l1*x1; C=l2*l2-l1*l1-x1*x1-y1*y1;
     *_c1=2*atan((A+sqrt(A*A+B*B-C*C))/(B-C)) ;
     if(*_c1<0) *_c1+=2*PI;  //
@@ -79,6 +98,7 @@ void LegClass::Njie(){
 	nije_5(&c1,&c4,x,y,L1,L6,L3,L4,L5);
 
 /////////////开链计算c4出错???????????////////////////////////////////////////
+	//float m,n,b,x1,y1;
 	// nije_5(&c1,(float*)0,x,y,L1,L6,L3,L4,L5); //利用L1,L6计算c1;
 	// m=L1*cos(c1);n=L1*sin(c1);
     // float _b=-ALP;

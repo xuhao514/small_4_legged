@@ -7,6 +7,8 @@
 //足底曲线的规划方向与车身的实际的方向可能不一样  比如车身的前后腿对称安装的时候  前后腿的前方向是反的
 #define PI 3.1415926
 
+
+
 class LegClass
 {
 public:
@@ -16,26 +18,26 @@ public:
 
 	//更新  真正更新电机位置的地方
 	void update(float _dt);
+  //通过setSteerRad直接设定角度的更新
+  void updateByRad();
   //设定足端坐标 
   //false为坐标超出工作限定范围
   bool setPos(float _x,float _y);
   //设定速度运动到目标位置 _use_t_long:移动使用时长/ms： 返回false为坐标超出工作限定范围  
   bool moveToPos(float _target_x,float _target_y,float _use_t_long);
+  //直接设定转角  单位：弧度
+  void setSteerRad(float _c1,float _c4);
   float get_c1(){return c1;};
   float get_c4(){return c4;};
-  float get_L5(){return L5;};
   float get_x(){return x;};
   float get_y(){return y;};
+  float get_L5();
 private:
   float c1,c4;             //对应角度   弧度
   float x,y;               //足底曲线坐标    mm
-  float angToEarth;      //与地面的夹角
-  float c1t;             //记录暂停时的角度 
-  float c4t;
   float c10,c40;         //上电初始角度
   //机构参数
-  ///  L1~L6杆长  ALP L6与L2夹角  ALP向外为正(逆时针)
-	float L1, L2, L3, L4, L5, L6,ALP;
+
   //正解  由(c1,c4))求(x,y)
 	void Zjie(float _c1,float _c4);
   //逆解 由(x,y)求(c1,c4)
@@ -52,11 +54,9 @@ private:
  
   bool set_move_to_pos;
 
-  float r_min,r_max;                       //工作空间范围最大最小半径  mm
-
    //求解的局部参数
-  float A,B,C,a,b,c;
-  float m,n,x1,y1;
+  // float A,B,C,a,b,c;
+  // float m,n,x1,y1;
 };
 
 

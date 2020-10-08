@@ -4,7 +4,7 @@
 #include <string.h>
 
 //typedef char u8;
-//数据格式 0xff,0xfe 开头  '\n','\r' 结尾  任意类型数据后接一字节的校验和
+//数据格式 0xff,0xfe 开头 跟u8的id '\n','\r' 结尾  任意类型数据后接一字节的校验和
 const static char head_char[2] = {0xff,0xfe};
 const static char end_char[2]  = {'\n','\r'};
 
@@ -64,7 +64,7 @@ class DataProcess
 				//编码  返回字符串  _len为字符串长度
 				template<typename T>  char* dataEncode(T *stru,char _head_id,int *_len);
 		private:
-				const static int ARRSIZE=48;
+				const static int ARRSIZE=128;
 				bool get_head,get_end,get_head_id;
 				char rec_head_arr[2];
 				char rec_end_arr[2];

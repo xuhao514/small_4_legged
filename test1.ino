@@ -10,20 +10,21 @@ DataProcess data_process;
 float ang = 0;
 
 float value;
-LegClass leg1;
-WalkLegClass walkLegClass1;
+LegClass leg_fl,leg_fr,leg_bl,leg_br;
+//WalkLegClass walkLegClass1;
+//WalkClass walk;
 Mpu mpu6050;
-
-struct SendValue
+double t_now,t_pre;
+double dt;
+bool inited=false;
+float get_time;
+struct SteerAngle
 {
- float a,b;
-} ;
-SendValue send_value;
-struct YPR{
-  float y,p,r;
+  float c1[4];
+  float c4[4];
 };
-YPR ypr_data;
-
+SteerAngle steer_ang;
+ 
 float pos = 60;    bool dir = false;    
 void singleServoControl(){
    
@@ -32,7 +33,7 @@ void singleServoControl(){
     if(dir) pos -= 0.5;
     if(!dir) pos += 0.5;
     //steering_engine1.setAngle(pos);  
-    leg1.setPos(11,pos);
+    leg_fl.setPos(11,pos);
 }  
 
 void usartRead()
@@ -47,12 +48,23 @@ void usartRead()
 		  {
         if(data_process.headId() == 1)
         {
+          if(data_process.dataDecode<SteerAngle>(_temp,&steer_ang))
+          {
+            leg_fr.setSteerRad(steer_ang.c1[0],steer_ang.c4[0]);
+            leg_fl.setSteerRad(steer_ang.c1[1],steer_ang.c4[1]);
+            leg_br.setSteerRad(steer_ang.c1[2],steer_ang.c4[2]);
+            leg_bl.setSteerRad(steer_ang.c1[3],steer_ang.c4[3]);
+            get_time = millis();
+          }
+        }
+        else if(data_process.headId() == 2)
+        {
           if(data_process.dataDecode<float>(_temp,&ang))
-            {
-              // steering_engine.setAngle(ang);
-              // steering_engine1.setRatio(ang);
-              leg1.setPos(0,ang);
-            }
+          {
+            // steering_engine.setAngle(ang);
+            // steering_engine1.setRatio(ang);
+            //leg_fl.setPos(0,ang);
+          }
         }
         else
         {
@@ -68,33 +80,34 @@ void usartRead()
 void sendData()
 {
   // value = steering_engine.getAng();
-  // value = steering_engine1.getRatio();
-  ypr_data.y =mpu6050.ypr[0]*180 / M_PI; ypr_data.p = mpu6050.ypr[1]*180 / M_PI; ypr_data.r = mpu6050.ypr[2]*180 / M_PI;
-  send_value.a = leg1.get_c1();
-  send_value.b = leg1.get_c4();
+ // value = steering_engine1.getRatio();
   int _len;
   char *arr;
   char _id = 11 ;
-  arr=data_process.dataEncode<WalkLegState>(&walkLegClass1.walk_leg_state, _id , &_len);
+  arr=data_process.dataEncode<YPR>(&mpu6050.ypr_data, _id , &_len);
+  for(int i=0;i<_len;i++)
+  {
+    Serial.print(arr[i]);
+  }
+  arr=data_process.dataEncode<float>(&get_time, 12 , &_len);
   for(int i=0;i<_len;i++)
   {
     Serial.print(arr[i]);
   }
 }
-double t_now,t_pre;
-double dt;
-bool inited=false;
+
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
   mpu6050.init();
-
-  leg1.legInit(2,3);
-  walkLegClass1.init(leg1,11,85,50,30,1000,1,1500,0,12,1);
-  //steering_engine1.init(1,2,544,2400,160.0,0);
-
-   walkLegClass1.move2InitPos(2000);
-   t_now = t_pre = millis();
+ //steering_engine1.init(1,2,544,2400,160.0,80);
+  leg_fl.legInit(2,3);leg_fr.legInit(4,5);leg_bl.legInit(6,7);leg_br.legInit(8,9);
+  
+  // walkLegClass1.init(leg_fl,11,85,50,30,1000,1,1500,0,12,1);
+  // walkLegClass1.move2InitPos(2000);
+  //walk.walkInit(leg_fr,leg_fl,leg_br,leg_bl,&mpu6050.ypr_data.y);
+  //walk.prepWalk();
+  t_now = t_pre = millis();
 }
 
 void loop() {
@@ -102,13 +115,15 @@ void loop() {
   t_now = millis();
   dt = t_now - t_pre;
   t_pre = t_now;
- // mpu6050.update();
+  mpu6050.update();
+
   //singleServoControl();
- // usartRead();
+  usartRead();
 
   //steering_engine1.updateSteering();  
-  //leg1.update(dt);
-  walkLegClass1.walkUpdate(dt);
+  leg_fl.updateByRad();leg_fr.updateByRad();leg_bl.updateByRad();leg_br.updateByRad();
+  //walkLegClass1.walkUpdate(dt);
+  //walk.update(dt);
   sendData();
-  delay(5);  
+  delay(8);  
 }
