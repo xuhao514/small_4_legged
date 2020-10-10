@@ -21,10 +21,13 @@ public:
     mpu.PrintActiveOffsets();
     mpu.setDMPEnabled(true);
   };
+
   void update()
   {
+    updata_time = millis();
     if (mpu.dmpGetCurrentFIFOPacket(fifoBuffer))
     {
+      rec_time = millis();
       mpu.dmpGetQuaternion(&q, fifoBuffer);
       mpu.dmpGetGravity(&gravity, &q);
       mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
@@ -36,7 +39,12 @@ public:
 //     // Serial.print("\t");
 //     // Serial.println(ypr[2] * 180 / M_PI);
     }
+    if(updata_time - rec_time> 1000)  //超过一秒就认为断开了连接
+      connected =false;
+    else
+      connected =true;
   };
+  bool isconnected(){return connected;};
   YPR ypr_data;  //单位 角度
 private:
   MPU6050 mpu;
@@ -44,6 +52,9 @@ private:
   Quaternion q;
   VectorFloat gravity;
   float ypr[3];  //弧度
+  float updata_time;  //更新运行时刻
+  float rec_time;     //接收到数据时刻
+  bool connected;     //是否连接上了
 };
 
 

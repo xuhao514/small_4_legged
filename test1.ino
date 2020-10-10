@@ -17,14 +17,21 @@ Mpu mpu6050;
 double t_now,t_pre;
 double dt;
 bool inited=false;
-float get_time;
+float get_time_now=0,get_time_pre=0;
 struct SteerAngle
 {
   float c1[4];
   float c4[4];
 };
 SteerAngle steer_ang;
- 
+struct ArduinoState
+{
+  float update_dt;
+  float rec_msg_dt;
+ // bool imu_connected;
+};
+ArduinoState arduino_state;
+
 float pos = 60;    bool dir = false;    
 void singleServoControl(){
    
@@ -50,11 +57,13 @@ void usartRead()
         {
           if(data_process.dataDecode<SteerAngle>(_temp,&steer_ang))
           {
-            leg_fr.setSteerRad(steer_ang.c1[0],steer_ang.c4[0]);
+            leg_fr.setSteerRad(-steer_ang.c1[0],-steer_ang.c4[0]);  //左右转向相反
             leg_fl.setSteerRad(steer_ang.c1[1],steer_ang.c4[1]);
-            leg_br.setSteerRad(steer_ang.c1[2],steer_ang.c4[2]);
+            leg_br.setSteerRad(-steer_ang.c1[2],-steer_ang.c4[2]);
             leg_bl.setSteerRad(steer_ang.c1[3],steer_ang.c4[3]);
-            get_time = millis();
+            get_time_now = millis();
+            arduino_state.rec_msg_dt = get_time_now - get_time_pre;
+            get_time_pre = get_time_now;
           }
         }
         else if(data_process.headId() == 2)
@@ -89,7 +98,7 @@ void sendData()
   {
     Serial.print(arr[i]);
   }
-  arr=data_process.dataEncode<float>(&get_time, 12 , &_len);
+  arr=data_process.dataEncode<ArduinoState>(&arduino_state, 12 , &_len);
   for(int i=0;i<_len;i++)
   {
     Serial.print(arr[i]);
@@ -99,9 +108,13 @@ void sendData()
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
-  mpu6050.init();
+ // mpu6050.init();
  //steering_engine1.init(1,2,544,2400,160.0,80);
-  leg_fl.legInit(2,3);leg_fr.legInit(4,5);leg_bl.legInit(6,7);leg_br.legInit(8,9);
+
+  leg_fl.legInit(2,3,70,75);
+  leg_fr.legInit(4,5,80,80);
+  leg_bl.legInit(6,7,85,70);
+  leg_br.legInit(8,9,70,75);
   
   // walkLegClass1.init(leg_fl,11,85,50,30,1000,1,1500,0,12,1);
   // walkLegClass1.move2InitPos(2000);
@@ -115,15 +128,19 @@ void loop() {
   t_now = millis();
   dt = t_now - t_pre;
   t_pre = t_now;
-  mpu6050.update();
-
+ // mpu6050.update();
+  arduino_state.update_dt = dt;
+ // arduino_state.imu_connected = mpu6050.isconnected();
   //singleServoControl();
   usartRead();
 
   //steering_engine1.updateSteering();  
-  leg_fl.updateByRad();leg_fr.updateByRad();leg_bl.updateByRad();leg_br.updateByRad();
+  leg_fl.updateByRad();
+  leg_fr.updateByRad();
+  leg_bl.updateByRad();
+  leg_br.updateByRad();
   //walkLegClass1.walkUpdate(dt);
   //walk.update(dt);
   sendData();
-  delay(8);  
+  delay(5);  
 }

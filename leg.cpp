@@ -4,15 +4,15 @@
 float L1, L2, L3, L4, L5, L6,ALP;
 float r_min,r_max;                       //工作空间范围最大最小半径  mm
 
-void LegClass::legInit(int _id_c1,int _id_c4){
+void LegClass::legInit(int _id_c1,int _id_c4,float _start_ang_c1,float _start_ang_c4){
 	c1=c4=0;
 	//机构参数
   ////  L1~L6杆长  ALP L6与L2夹角  ALP向外为正(逆时针)
    L1=50; L2=80;  L3=80;  L4=50;  L5=22; L6=80; ALP=0.0;
    c10=PI; c40=0; //角度初值   计算坐标系与运动开始坐标系的差值
    r_min = 50; r_max = 110; 
-   engine_c1.init(_id_c1,_id_c1,544,2400,160.0,80);
-   engine_c4.init(_id_c4,_id_c4,544,2400,160.0,80);
+   engine_c1.init(_id_c1,_id_c1,544,2400,160.0,_start_ang_c1);
+   engine_c4.init(_id_c4,_id_c4,544,2400,160.0,_start_ang_c4);
    set_move_to_pos=false;
 
    Zjie(c10,c40);  //计算初始的坐标

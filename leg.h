@@ -13,7 +13,7 @@ class LegClass
 {
 public:
   //c1与c4对应的舵机下标
-	void legInit(int _id_c1,int _id_c4);
+	void legInit(int _id_c1,int _id_c4,float _start_ang_c1=80,float _start_ang_c4=80);
 	void legInit(float _L1,float _L2,float _L3,float _L4,float _L5,float _L6,float _ALP,float _c10,float _c40);
 
 	//更新  真正更新电机位置的地方
