@@ -1,14 +1,14 @@
 #ifndef _STEERING_ENGINE_H
 #define _STEERING_ENGINE_H
 #include <Servo.h> 
-#include "utils.h"
-
+#include <Wire.h>
+#include <Adafruit_PWMServoDriver.h>
+//16路pwm板教程
+// https://blog.csdn.net/weixin_43453553/article/details/103811498
 class SteeringEngine
 {
 private:
 	int id;                 // 舵机id  应该与 io口一致
-    int SERVO_PIN;          //io口
-    Servo myservo; 
     float duty_ratio_min;  //最小pwm
 	float duty_ratio_max;  //最大
     float angle_range;      //转动角度范围  度
@@ -20,6 +20,7 @@ private:
 	float ang_min,ang_max;  //角度限制
 	float start_ration;    //起始占空比
 	float start_ang;       //起始角度
+	
 public:
     void init(int _id ,int _pin, float _duty_ratio_min,float _duty_ratio_max, float _angle_range,float _start_ang);  //³õÊ¼»¯
     //设定角度值  相对于起始角度
@@ -32,8 +33,8 @@ public:
 	void updateSteering();          
 	//限定转动的范围        
 	void setAngRang(float _ang_min,float _ang_max);  
-	float getAng();
-	float getRatio();
+	// float getAng();
+	// float getRatio();
 };
 
 #endif

@@ -3,7 +3,7 @@
 #include "data_processing.h"
 #include "leg.h"
 #include "walk.h"
-#include "mpu.hpp"
+//#include "mpu.hpp"
 
 SteeringEngine steering_engine1;
 DataProcess data_process;
@@ -11,9 +11,9 @@ float ang = 0;
 
 float value;
 LegClass leg_fl,leg_fr,leg_bl,leg_br;
-//WalkLegClass walkLegClass1;
+WalkLegClass walk_fl,walk_bl,walk_fr,walk_br;
 //WalkClass walk;
-Mpu mpu6050;
+//Mpu mpu6050;
 double t_now,t_pre;
 double dt;
 bool inited=false;
@@ -41,6 +41,9 @@ void singleServoControl(){
     if(!dir) pos += 0.5;
     //steering_engine1.setAngle(pos);  
     leg_fl.setPos(11,pos);
+    leg_fr.setPos(11,pos);
+    leg_bl.setPos(11,pos);
+    leg_br.setPos(11,pos);
 }  
 
 void usartRead()
@@ -52,7 +55,7 @@ void usartRead()
     {
       char _temp = Serial.read();
       if(data_process.getHeadMsg(_temp))
-		  {
+      {
         if(data_process.headId() == 1)
         {
           if(data_process.dataDecode<SteerAngle>(_temp,&steer_ang))
@@ -90,14 +93,15 @@ void sendData()
 {
   // value = steering_engine.getAng();
  // value = steering_engine1.getRatio();
+ 
   int _len;
   char *arr;
   char _id = 11 ;
-  arr=data_process.dataEncode<YPR>(&mpu6050.ypr_data, _id , &_len);
-  for(int i=0;i<_len;i++)
-  {
-    Serial.print(arr[i]);
-  }
+  // arr=data_process.dataEncode<YPR>(&mpu6050.ypr_data, _id , &_len);
+  // for(int i=0;i<_len;i++)
+  // {
+  //   Serial.print(arr[i]);
+  // }
   arr=data_process.dataEncode<ArduinoState>(&arduino_state, 12 , &_len);
   for(int i=0;i<_len;i++)
   {
@@ -111,13 +115,13 @@ void setup() {
  // mpu6050.init();
  //steering_engine1.init(1,2,544,2400,160.0,80);
 
-  leg_fl.legInit(2,3,70,75);
-  leg_fr.legInit(4,5,80,80);
-  leg_bl.legInit(6,7,85,70);
-  leg_br.legInit(8,9,70,75);
+  leg_fl.legInit(0,1,70,65);
+  leg_bl.legInit(2,3,75,60);
+  leg_fr.legInit(4,5,80,70);
+  leg_br.legInit(7,8,75,90);
   
-  // walkLegClass1.init(leg_fl,11,85,50,30,1000,1,1500,0,12,1);
-  // walkLegClass1.move2InitPos(2000);
+  //  walk_fl.init(leg_fl,11,85,50,30,500,1,750,0,12,1);
+  //  walk_fl.move2InitPos(2000);
   //walk.walkInit(leg_fr,leg_fl,leg_br,leg_bl,&mpu6050.ypr_data.y);
   //walk.prepWalk();
   t_now = t_pre = millis();
@@ -131,16 +135,21 @@ void loop() {
  // mpu6050.update();
   arduino_state.update_dt = dt;
  // arduino_state.imu_connected = mpu6050.isconnected();
-  //singleServoControl();
+  singleServoControl();
   usartRead();
-
+  leg_fl.update(dt);
+  leg_fr.update(dt);
+  leg_bl.update(dt);
+  leg_br.update(dt);
   //steering_engine1.updateSteering();  
-  leg_fl.updateByRad();
-  leg_fr.updateByRad();
-  leg_bl.updateByRad();
-  leg_br.updateByRad();
-  //walkLegClass1.walkUpdate(dt);
+  //  leg_fl.updateByRad();
+  //  leg_bl.updateByRad();
+  //  leg_fr.updateByRad();
+  // leg_br.updateByRad();
+ // walk_fl.walkUpdate(dt);
   //walk.update(dt);
   sendData();
-  delay(5);  
+  
+  delay(10);  
+  
 }
