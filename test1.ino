@@ -60,9 +60,9 @@ void usartRead()
         {
           if(data_process.dataDecode<SteerAngle>(_temp,&steer_ang))
           {
-            leg_fr.setSteerRad(-steer_ang.c1[0],-steer_ang.c4[0]);  //左右转向相反
+            leg_fr.setSteerRad(steer_ang.c1[0],steer_ang.c4[0]);  //左右转向相反
             leg_fl.setSteerRad(steer_ang.c1[1],steer_ang.c4[1]);
-            leg_br.setSteerRad(-steer_ang.c1[2],-steer_ang.c4[2]);
+            leg_br.setSteerRad(steer_ang.c1[2],steer_ang.c4[2]);
             leg_bl.setSteerRad(steer_ang.c1[3],steer_ang.c4[3]);
             get_time_now = millis();
             arduino_state.rec_msg_dt = get_time_now - get_time_pre;
@@ -115,10 +115,10 @@ void setup() {
  // mpu6050.init();
  //steering_engine1.init(1,2,544,2400,160.0,80);
 
-  leg_fl.legInit(0,1,70,65);
-  leg_bl.legInit(2,3,75,60);
-  leg_fr.legInit(4,5,80,70);
-  leg_br.legInit(7,8,75,90);
+  leg_fr.legInit(0,1,75,75);
+  leg_fl.legInit(2,3,75,70,true);
+  leg_br.legInit(4,5,70,75);
+  leg_bl.legInit(6,7,85,75,true);
   
   //  walk_fl.init(leg_fl,11,85,50,30,500,1,750,0,12,1);
   //  walk_fl.move2InitPos(2000);
@@ -135,17 +135,17 @@ void loop() {
  // mpu6050.update();
   arduino_state.update_dt = dt;
  // arduino_state.imu_connected = mpu6050.isconnected();
-  singleServoControl();
+ // singleServoControl();
   usartRead();
-  leg_fl.update(dt);
-  leg_fr.update(dt);
-  leg_bl.update(dt);
-  leg_br.update(dt);
+  // leg_fl.update(dt);
+  // leg_fr.update(dt);
+  // leg_bl.update(dt);
+  // leg_br.update(dt);
   //steering_engine1.updateSteering();  
-  //  leg_fl.updateByRad();
-  //  leg_bl.updateByRad();
-  //  leg_fr.updateByRad();
-  // leg_br.updateByRad();
+  leg_fl.updateByRad();
+  leg_bl.updateByRad();
+  leg_fr.updateByRad();
+  leg_br.updateByRad();
  // walk_fl.walkUpdate(dt);
   //walk.update(dt);
   sendData();

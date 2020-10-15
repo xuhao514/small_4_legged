@@ -12,8 +12,8 @@
 class LegClass
 {
 public:
-  //c1与c4对应的舵机下标
-	void legInit(int _id_c1,int _id_c4,float _start_ang_c1=80,float _start_ang_c4=80);
+  //c1与c4对应的舵机下标  _start_ang_c/c4起始的角度  _reverse转向是否反向  当电机对称安装时，转向相反发
+	void legInit(int _id_c1,int _id_c4,float _start_ang_c1=80,float _start_ang_c4=80,bool _reverse = false);
 	void legInit(float _L1,float _L2,float _L3,float _L4,float _L5,float _L6,float _ALP,float _c10,float _c40);
 
 	//更新  真正更新电机位置的地方
@@ -36,6 +36,7 @@ private:
   float c1,c4;             //对应角度   弧度
   float x,y;               //足底曲线坐标    mm
   float c10,c40;         //上电初始角度
+  bool reverse;          //转向是否反向  当电机对称安装时，转向相反发
   //机构参数
 
   //正解  由(c1,c4))求(x,y)

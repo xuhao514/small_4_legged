@@ -4,8 +4,8 @@
 float L1, L2, L3, L4, L5, L6,ALP;
 float r_min,r_max;                       //工作空间范围最大最小半径  mm
 
-void LegClass::legInit(int _id_c1,int _id_c4,float _start_ang_c1,float _start_ang_c4){
-	c1=c4=0;
+void LegClass::legInit(int _id_c1,int _id_c4,float _start_ang_c1,float _start_ang_c4,bool _reverse ){
+	c1=c4=0; 
 	//机构参数
   ////  L1~L6杆长  ALP L6与L2夹角  ALP向外为正(逆时针)
    L1=50; L2=80;  L3=80;  L4=50;  L5=22; L6=80; ALP=0.0;
@@ -14,7 +14,7 @@ void LegClass::legInit(int _id_c1,int _id_c4,float _start_ang_c1,float _start_an
    engine_c1.init(_id_c1,_id_c1,150,600,170.0,_start_ang_c1);
    engine_c4.init(_id_c4,_id_c4,150,600,170.0,_start_ang_c4);
    set_move_to_pos=false;
-
+   reverse = _reverse;
    Zjie(c10,c40);  //计算初始的坐标
    engine_c1.setRad(c1);
    engine_c4.setRad(c4);
@@ -37,8 +37,16 @@ void LegClass::update(float _dt)
 		use_t+=_dt;
 		setPos(Lerp(start_x,target_x,use_t/use_t_long) , Lerp(start_y,target_y,use_t/use_t_long));
 	}
-	engine_c1.setRad(c1);
-	engine_c4.setRad(c4);
+	if(reverse)
+	{
+		engine_c1.setRad(-c1);
+		engine_c4.setRad(-c4);
+	}
+	else
+	{
+		engine_c1.setRad(c1);
+		engine_c4.setRad(c4);
+	}
 	engine_c1.updateSteering();
 	engine_c4.updateSteering();
 }
@@ -62,8 +70,16 @@ bool LegClass::setPos(float _x,float _y)
 void LegClass::setSteerRad(float _c1,float _c4)
 {
 	c1=_c1; c4=_c4;
-	engine_c1.setRad(_c1);
-	engine_c4.setRad(_c4);
+	if(reverse)
+	{
+		engine_c1.setRad(-c1);
+		engine_c4.setRad(-c4);
+	}
+	else
+	{
+		engine_c1.setRad(c1);
+		engine_c4.setRad(c4);
+	}
 }
 
 bool LegClass::moveToPos(float _target_x,float _target_y,float _use_t_long)
@@ -78,7 +94,10 @@ bool LegClass::moveToPos(float _target_x,float _target_y,float _use_t_long)
 	return true;
 }
 
-float LegClass::get_L5(){return L5;};
+float LegClass::get_L5()
+{
+	return L5;
+}
 
 //闭链五杆的逆解  被Njie()调用
 void LegClass::nije_5( float *_c1, float *_c4, float x1,float y1,float l1,float l2,float l3,float l4,float l5){
